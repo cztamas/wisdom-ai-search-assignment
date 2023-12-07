@@ -3,6 +3,7 @@
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
+const { orderBy } = require('lodash');
 const { port } = require('./config');
 const { createCache } = require('./click-count-cache');
 const { search } = require('./omdb-adapter');
@@ -26,8 +27,18 @@ app.get('/search', async (req, res) => {
 
   const allResults = [...fileResults, ...movieResults];
 
+  const resultsWithClickCount = allResults.map(result => ({
+    ...result,
+    clickCount: clickCountCache.getCount(result.id),
+  }));
+
+  const resultsToReturn = orderBy(resultsWithClickCount, 'clickCount', 'desc').slice(
+    pageIndex * resultPageSize,
+    (pageIndex + 1) * resultPageSize
+  );
+
   res.send({
-    results: allResults.slice(pageIndex * resultPageSize, (pageIndex + 1) * resultPageSize),
+    results: resultsToReturn,
     resultCount: allResults.length,
   });
 });
