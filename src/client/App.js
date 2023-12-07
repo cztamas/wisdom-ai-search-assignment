@@ -37,10 +37,6 @@ function App() {
     }
   };
 
-  const handleRowClick = async row => {
-    await click({ title: row.title, type: row.type });
-  };
-
   const loadResultPage = async (searchTerm, pageIndex) => {
     setLoading(true);
     setPageIndex(pageIndex);
@@ -85,8 +81,8 @@ function App() {
               <TableBody>
                 {results.map(row => (
                   <TableRow
-                    key={row.title}
-                    onClick={() => handleRowClick(row)}
+                    key={row.id}
+                    onClick={() => click(row.id)}
                     hover
                     sx={{ '&:last-child td, &:last-child th': { border: 0 }, cursor: 'pointer' }}
                   >

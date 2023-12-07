@@ -8,6 +8,6 @@ export const search = async (searchTerm, pageIndex = 0) => {
   return searchResult;
 };
 
-export const click = async ({ title, type }) => {
-  await axios.post(`${config.apiUrl}/click`, { title, type });
+export const click = async itemId => {
+  await axios.post(`${config.apiUrl}/click`, { itemId });
 };

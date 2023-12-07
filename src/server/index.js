@@ -20,8 +20,8 @@ app.get('/search', async (req, res) => {
 
   const movieResults = await search(searchTerm);
   const fileResults = [
-    { title: 'test.txt', type: 'file' },
-    { title: 'test2.txt', type: 'file' },
+    { id: 'file_1', title: 'test.txt', type: 'file' },
+    { id: 'file_2', title: 'test2.txt', type: 'file' },
   ];
 
   const allResults = [...fileResults, ...movieResults];
@@ -33,10 +33,9 @@ app.get('/search', async (req, res) => {
 });
 
 app.post('/click', (req, res) => {
-  const { title, type } = req.body;
-  const cacheKey = `${type}_${title}`;
+  const { itemId } = req.body;
+  clickCountCache.incrementCount(itemId);
 
-  clickCountCache.incrementCount(cacheKey);
   res.sendStatus(200);
 });
 

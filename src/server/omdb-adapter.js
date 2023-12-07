@@ -34,5 +34,5 @@ exports.search = async searchTerm => {
   );
 
   const results = [...firstPageResults, ...flatten(remainingPageResults)];
-  return results.map(item => ({ title: item.Title, type: 'movie' }));
+  return results.map(item => ({ id: `movie_${item.imdbID}`, title: item.Title, type: 'movie' }));
 };
