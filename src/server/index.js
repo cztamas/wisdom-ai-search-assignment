@@ -20,37 +20,45 @@ const resultPageSize = 10;
 const clickCountCache = createClickCountCache();
 
 app.get('/search', async (req, res) => {
-  const searchTerm = req.query.searchTerm;
-  const pageIndex = Number(req.query.pageIndex);
+  try {
+    const searchTerm = req.query.searchTerm;
+    const pageIndex = Number(req.query.pageIndex);
 
-  const [movieResults, fileResults] = await Promise.all([
-    searchInMovies(searchTerm),
-    searchInFiles(searchTerm),
-  ]);
+    const [movieResults, fileResults] = await Promise.all([
+      searchInMovies(searchTerm),
+      searchInFiles(searchTerm),
+    ]);
 
-  const allResults = [...fileResults, ...movieResults];
+    const allResults = [...fileResults, ...movieResults];
 
-  const resultsWithClickCount = allResults.map(result => ({
-    ...result,
-    clickCount: clickCountCache.getCount(result.id),
-  }));
+    const resultsWithClickCount = allResults.map(result => ({
+      ...result,
+      clickCount: clickCountCache.getCount(result.id),
+    }));
 
-  const resultsToReturn = orderBy(resultsWithClickCount, 'clickCount', 'desc').slice(
-    pageIndex * resultPageSize,
-    (pageIndex + 1) * resultPageSize
-  );
+    const resultsToReturn = orderBy(resultsWithClickCount, 'clickCount', 'desc').slice(
+      pageIndex * resultPageSize,
+      (pageIndex + 1) * resultPageSize
+    );
 
-  res.send({
-    results: resultsToReturn,
-    resultCount: allResults.length,
-  });
+    res.send({
+      results: resultsToReturn,
+      resultCount: allResults.length,
+    });
+  } catch (error) {
+    res.sendStatus(500);
+  }
 });
 
 app.post('/click', (req, res) => {
-  const { itemId } = req.body;
-  clickCountCache.incrementCount(itemId);
+  try {
+    const { itemId } = req.body;
+    clickCountCache.incrementCount(itemId);
 
-  res.sendStatus(200);
+    res.sendStatus(200);
+  } catch (error) {
+    res.sendStatus(500);
+  }
 });
 
 const startServer = async () => {
