@@ -2,17 +2,18 @@ import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { DataGrid } from '@mui/x-data-grid';
 import { search } from './services/api';
 
 import './App.css';
-
-const resultColumns = [
-  { field: 'title', headerName: 'Title', width: 600 },
-  { field: 'type', headerName: 'Type', width: 100 },
-];
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,17 +48,33 @@ function App() {
       </Box>
 
       {!loading && results.length > 0 && (
-        <DataGrid
-          rows={results}
-          columns={resultColumns}
-          getRowId={row => row.title}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 10 },
-            },
-          }}
-          pageSizeOptions={[10]}
-        />
+        <Box className="result-container">
+          <TableContainer component={Paper} sx={{ width: '100%', maxWidth: 800 }}>
+            <Table aria-label="search results">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Title</TableCell>
+                  <TableCell>Type</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {results.map(row => (
+                  <TableRow
+                    key={row.title}
+                    onClick={() => console.log(row.title)}
+                    hover
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 }, cursor: 'pointer' }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {row.title}
+                    </TableCell>
+                    <TableCell align="left">{row.type}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       )}
     </Box>
   );
