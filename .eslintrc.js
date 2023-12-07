@@ -13,5 +13,11 @@ module.exports = {
         version: '>=20.0.0',
       },
     ],
+    'node/no-unsupported-features/node-builtins': [
+      'error',
+      {
+        version: '>=20.0.0',
+      },
+    ],
   },
 };

@@ -5,25 +5,28 @@ const cors = require('cors');
 const express = require('express');
 const { orderBy } = require('lodash');
 const { port } = require('./config');
-const { createCache } = require('./components/click-count-cache');
-const { search } = require('./components/omdb-adapter');
+const { createCache: createClickCountCache } = require('./components/click-count-cache');
+const { search: searchInMovies } = require('./components/omdb-adapter');
+const {
+  initializeCache: initializeFileCache,
+  search: searchInFiles,
+} = require('./components/file-search');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
 const resultPageSize = 10;
-const clickCountCache = createCache();
+const clickCountCache = createClickCountCache();
 
 app.get('/search', async (req, res) => {
   const searchTerm = req.query.searchTerm;
   const pageIndex = Number(req.query.pageIndex);
 
-  const movieResults = await search(searchTerm);
-  const fileResults = [
-    { id: 'file_1', title: 'test.txt', type: 'file' },
-    { id: 'file_2', title: 'test2.txt', type: 'file' },
-  ];
+  const [movieResults, fileResults] = await Promise.all([
+    searchInMovies(searchTerm),
+    searchInFiles(searchTerm),
+  ]);
 
   const allResults = [...fileResults, ...movieResults];
 
@@ -50,6 +53,12 @@ app.post('/click', (req, res) => {
   res.sendStatus(200);
 });
 
-app.listen(port, () => {
-  console.log(`listening on port ${port}`);
-});
+const startServer = async () => {
+  await initializeFileCache();
+
+  app.listen(port, () => {
+    console.log(`listening on port ${port}`);
+  });
+};
+
+startServer();
