@@ -8,6 +8,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -18,17 +19,36 @@ import './App.css';
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
+  const [resultCount, setResultCount] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
-    setLoading(true);
-    const { results, resultCount } = await search(searchTerm);
-    setResults(results);
-    setLoading(false);
+    await loadResultPage(searchTerm, 0);
+  };
+
+  const handleChangePage = async (_event, newPageIndex) => {
+    await loadResultPage(searchTerm, newPageIndex);
+  };
+
+  const handleKeyDown = event => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
   };
 
   const handleRowClick = async row => {
     await click({ title: row.title, type: row.type });
+  };
+
+  const loadResultPage = async (searchTerm, pageIndex) => {
+    setLoading(true);
+    setPageIndex(pageIndex);
+
+    const { results, resultCount } = await search(searchTerm, pageIndex);
+    setResults(results);
+    setResultCount(resultCount);
+    setLoading(false);
   };
 
   return (
@@ -41,6 +61,7 @@ function App() {
           fullWidth
           sx={{ maxWidth: '600px', pb: 2 }}
           onChange={event => setSearchTerm(event.target.value)}
+          onKeyDown={handleKeyDown}
           label="Search in movies and full random files"
           variant="outlined"
         />
@@ -78,6 +99,14 @@ function App() {
               </TableBody>
             </Table>
           </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10]}
+            component="div"
+            count={resultCount}
+            rowsPerPage={10}
+            page={pageIndex}
+            onPageChange={handleChangePage}
+          />
         </Box>
       )}
     </Box>

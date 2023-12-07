@@ -5,25 +5,30 @@ const cors = require('cors');
 const express = require('express');
 const { port } = require('./config');
 const { createCache } = require('./click-count-cache');
+const { search } = require('./omdb-adapter');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+const resultPageSize = 10;
 const clickCountCache = createCache();
 
 app.get('/search', async (req, res) => {
   const searchTerm = req.query.searchTerm;
+  const pageIndex = Number(req.query.pageIndex);
 
-  await new Promise(resolve => setTimeout(resolve, 800));
+  const movieResults = await search(searchTerm);
+  const fileResults = [
+    { title: 'test.txt', type: 'file' },
+    { title: 'test2.txt', type: 'file' },
+  ];
+
+  const allResults = [...fileResults, ...movieResults];
 
   res.send({
-    results: [
-      { title: 'test.txt', type: 'file' },
-      { title: 'Terminator 19', type: 'movie' },
-      { title: 'test2.txt', type: 'file' },
-    ],
-    resultCount: 3,
+    results: allResults.slice(pageIndex * resultPageSize, (pageIndex + 1) * resultPageSize),
+    resultCount: allResults.length,
   });
 });
 
@@ -33,8 +38,6 @@ app.post('/click', (req, res) => {
 
   clickCountCache.incrementCount(cacheKey);
   res.sendStatus(200);
-
-  console.log(cacheKey, clickCountCache.getCount(cacheKey));
 });
 
 app.listen(port, () => {
