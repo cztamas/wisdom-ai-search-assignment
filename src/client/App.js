@@ -11,7 +11,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { search } from './services/api';
+import { click, search } from './services/api';
 
 import './App.css';
 
@@ -25,6 +25,10 @@ function App() {
     const { results, resultCount } = await search(searchTerm);
     setResults(results);
     setLoading(false);
+  };
+
+  const handleRowClick = async row => {
+    await click({ title: row.title, type: row.type });
   };
 
   return (
@@ -61,7 +65,7 @@ function App() {
                 {results.map(row => (
                   <TableRow
                     key={row.title}
-                    onClick={() => console.log(row.title)}
+                    onClick={() => handleRowClick(row)}
                     hover
                     sx={{ '&:last-child td, &:last-child th': { border: 0 }, cursor: 'pointer' }}
                   >

@@ -7,3 +7,7 @@ export const search = async searchTerm => {
   );
   return searchResult;
 };
+
+export const click = async ({ title, type }) => {
+  await axios.post(`${config.apiUrl}/click`, { title, type });
+};
