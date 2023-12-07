@@ -18,3 +18,4 @@
 - The search in files also returns partial matches (i.e. files that contain a word that contains the word we search for). The behavior was not specified in the description, and it was not obvious for me whether this is worse or better than requiring exact matches, so I chose the simpler way.
 - There is no production deploy or configuration, only the dev start.
 - The server reads and caches all file content on startup. This is quick and simple for a small amount of test data (i.e. a few thousand relatively small files), but obviously would not work for a much larger amount of data. But then we would need some real file content indexing anyway, and that did not seem to be part of the assignment.
+- You can add more text files, if you wish. The search runs for all non-hidden files located in the data folder (including subfolders recursively).
