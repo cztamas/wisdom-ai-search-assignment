@@ -5,8 +5,13 @@ module.exports = {
   extends: ['eslint:recommended', 'plugin:node/recommended'],
   rules: {
     'node/no-unpublished-require': 'off',
-    'no-process-exit': 'off',
     'no-unused-vars': 'warn',
-    strict: 'warn'
-  }
+    strict: 'warn',
+    'node/no-unsupported-features/es-syntax': [
+      'error',
+      {
+        version: '>=20.0.0',
+      },
+    ],
+  },
 };
