@@ -1,3 +1,5 @@
+'use strict';
+
 const cors = require('cors');
 const express = require('express');
 const { port } = require('./config');
