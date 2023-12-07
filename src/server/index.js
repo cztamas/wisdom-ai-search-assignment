@@ -5,8 +5,8 @@ const cors = require('cors');
 const express = require('express');
 const { orderBy } = require('lodash');
 const { port } = require('./config');
-const { createCache } = require('./click-count-cache');
-const { search } = require('./omdb-adapter');
+const { createCache } = require('./components/click-count-cache');
+const { search } = require('./components/omdb-adapter');
 
 const app = express();
 app.use(cors());

@@ -2,7 +2,7 @@
 
 const axios = require('axios');
 const { flatten, range } = require('lodash');
-const { omdbApiKey } = require('./config');
+const { omdbApiKey } = require('../config');
 
 const resultPageSize = 10;
 
