@@ -23,6 +23,12 @@ function App() {
   const [pageIndex, setPageIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [searchFailed, setSearchFailed] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  const handleInputChange = event => {
+    setSearchTerm(event.target.value);
+    setShowSearchResults(false);
+  };
 
   const handleSearch = async () => {
     await loadResultPage(searchTerm, 0);
@@ -53,6 +59,7 @@ function App() {
       setSearchFailed(true);
     } finally {
       setLoading(false);
+      setShowSearchResults(true);
     }
   };
 
@@ -65,7 +72,7 @@ function App() {
         <TextField
           fullWidth
           sx={{ maxWidth: '600px', pb: 2 }}
-          onChange={event => setSearchTerm(event.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           label="Search in movies and full random files"
           variant="outlined"
@@ -73,56 +80,62 @@ function App() {
         <Button variant="contained" onClick={handleSearch} disabled={!searchTerm}>
           Search
         </Button>
+
+        {loading && <CircularProgress sx={{ mt: 4 }} />}
       </Box>
 
-      <Box className="result-container">
-        {loading && <CircularProgress sx={{ mt: 4 }} />}
-        {!loading && searchFailed && (
-          <Typography variant="h6">
-            An error happened during your search. Please try again.
-          </Typography>
-        )}
-        {!loading && !searchFailed && results.length === 0 && (
-          <Typography variant="h6">No results were found for your search.</Typography>
-        )}
-        {!loading && !searchFailed && results.length > 0 && (
-          <>
-            <TableContainer component={Paper} sx={{ width: '100%', maxWidth: 800 }}>
-              <Table aria-label="search results">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Title</TableCell>
-                    <TableCell>Type</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {results.map(row => (
-                    <TableRow
-                      key={row.id}
-                      onClick={() => click(row.id)}
-                      hover
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 }, cursor: 'pointer' }}
-                    >
-                      <TableCell component="th" scope="row">
-                        {row.title}
-                      </TableCell>
-                      <TableCell align="left">{row.type}</TableCell>
+      {showSearchResults && !loading && (
+        <Box className="result-container">
+          {searchFailed && (
+            <Typography variant="h6">
+              An error happened during your search. Please try again.
+            </Typography>
+          )}
+          {!searchFailed && results.length === 0 && (
+            <Typography variant="h6">No results were found for your search.</Typography>
+          )}
+          {!searchFailed && results.length > 0 && (
+            <>
+              <TableContainer component={Paper} sx={{ width: '100%', maxWidth: 800 }}>
+                <Table aria-label="search results" size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Title</TableCell>
+                      <TableCell>Type</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10]}
-              component="div"
-              count={resultCount}
-              rowsPerPage={10}
-              page={pageIndex}
-              onPageChange={handleChangePage}
-            />
-          </>
-        )}
-      </Box>
+                  </TableHead>
+                  <TableBody>
+                    {results.map(row => (
+                      <TableRow
+                        key={row.id}
+                        onClick={() => click(row.id)}
+                        hover
+                        sx={{
+                          '&:last-child td, &:last-child th': { border: 0 },
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <TableCell component="th" scope="row">
+                          {row.title}
+                        </TableCell>
+                        <TableCell align="left">{row.type}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10]}
+                component="div"
+                count={resultCount}
+                rowsPerPage={10}
+                page={pageIndex}
+                onPageChange={handleChangePage}
+              />
+            </>
+          )}
+        </Box>
+      )}
     </Box>
   );
 }
